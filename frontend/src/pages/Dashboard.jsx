@@ -5,24 +5,62 @@ import { useNavigate } from "react-router-dom";
 export default function Dashboard() {
   const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.auth);
-  const { data } = useGetDashboardQuery(userInfo?.role, { skip: !userInfo });
+
+const {
+  data,
+  isLoading,
+  error
+} = useGetDashboardQuery(userInfo?.role, {
+  skip: !userInfo?.role,
+});
+
   const summary = data?.summary || {};
-  const weeklyActivity = [
-    { day: "Mon", value: 8.2 },
-    { day: "Tue", value: 7.6 },
-    { day: "Wed", value: 9.1 },
-    { day: "Thu", value: 8.4 },
-    { day: "Fri", value: 8.9 },
-    { day: "Sat", value: 5.4 },
-    { day: "Sun", value: 0 },
-  ];
-  const weekTargetHours = 48;
-  const totalWorkedHours = Number(summary.totalHours || 0);
-  const targetProgress = Math.max(0, Math.min(100, Math.round((totalWorkedHours / weekTargetHours) * 100)));
-  const attendanceRate = Math.max(
-    0,
-    Math.min(100, Math.round(((Number(summary.totalDays) || 0) / 7) * 100))
+
+  if (isLoading) return <p>Loading dashboard...</p>;
+  if (error) return <p>Error loading dashboard</p>;
+
+
+// ✅ Dynamic Weekly Activity (Mon → Sun proper mapping)
+const weeklyActivity = (() => {
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const result = days.map((day) => ({ day, value: 0 }));
+
+  const now = new Date();
+  const weekAgo = new Date();
+  weekAgo.setDate(now.getDate() - 7);
+
+  const weeklyRecords = (data?.records || []).filter(
+    (item) => new Date(item.date) >= weekAgo
   );
+
+  weeklyRecords.forEach((item) => {
+    const d = new Date(item.date);
+    const dayName = d.toLocaleDateString("en-US", { weekday: "short" });
+
+    const index = result.findIndex((d) => d.day === dayName);
+    if (index !== -1) {
+      result[index].value += item.workingHours || 0;
+    }
+  });
+
+  return result;
+})();
+
+// ✅ Target & Stats Calculation 
+const weekTargetHours = 48;
+
+const totalWorkedHours = Number(summary.totalHours || 0);
+
+const targetProgress = Math.max(
+  0,
+  Math.min(100, Math.round((totalWorkedHours / weekTargetHours) * 100))
+);
+
+const attendanceRate = Math.max(
+  0,
+  Math.min(100, Math.round(((Number(summary.totalDays) || 0) / 7) * 100))
+);
+
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-green-50 to-white text-slate-800">

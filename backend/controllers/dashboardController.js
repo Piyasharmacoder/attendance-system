@@ -6,7 +6,7 @@ import Overtime from '../models/Overtime.js';
 // Employee Dashboard
 export const getMyDashboard = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user._id;
 
         const {
             startDate,

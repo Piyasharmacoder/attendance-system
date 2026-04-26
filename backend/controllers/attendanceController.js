@@ -5,8 +5,9 @@ import { isWithinRadius } from '../utils/geofence.js';
 import User from '../models/User.js';
 
 // Office location
-const OFFICE_LAT = 22.673989;
-const OFFICE_LNG = 75.877022;
+const OFFICE_LAT = 22.7616;
+const OFFICE_LNG = 75.9265;
+
 
 // global function to get today's date range
 const getTodayRange = () => {
@@ -27,6 +28,16 @@ export const punchIn = async (req, res) => {
     const { lat, lng, selfie } = req.body;
     const parsedLat = Number(lat);
     const parsedLng = Number(lng);
+    
+// ✅ for DEBUG LOGS
+console.log("User Lat:", parsedLat);
+console.log("User Lng:", parsedLng);
+console.log("Office Lat:", OFFICE_LAT);
+console.log("Office Lng:", OFFICE_LNG);
+
+// ✅ DISTANCE CHECK (YAHAN LAGANA HAI)
+const distance = getDistance(parsedLat, parsedLng, OFFICE_LAT, OFFICE_LNG);
+console.log("Distance (meters):", distance);
     
     // ✅ VALIDATION 
     if (
@@ -53,13 +64,13 @@ export const punchIn = async (req, res) => {
     const inRange = isWithinRadius(parsedLat, parsedLng, OFFICE_LAT, OFFICE_LNG);
 
     // --- location restriction ---
-    if (!inRange) {
-      logger.warn(`Punch In Denied: User ${req.user._id} is out of range.`);
-      return res.status(403).json({ 
-        success: false, 
-        message: "Punch-in failed. You are outside the office perimeter.." 
-      });
-    }
+    // if (!inRange) {
+    //   logger.warn(`Punch In Denied: User ${req.user._id} is out of range.`);
+    //   return res.status(403).json({ 
+    //     success: false, 
+    //     message: "Punch-in failed. You are outside the office perimeter.." 
+    //   });
+    // }
 
     const attendance = await Attendance.create({
       user: req.user._id,
@@ -132,13 +143,13 @@ export const punchOut = async (req, res) => {
     const inRange = isWithinRadius(parsedLat, parsedLng, OFFICE_LAT, OFFICE_LNG);
 
     // --- location restriction ---
-    if (!inRange) {
-      logger.warn(`Punch Out Denied: User ${req.user._id} is out of range.`);
-      return res.status(403).json({ 
-        success: false, 
-        message: "Punch-out failed. You are outside the office perimeter.." 
-      });
-    }
+    // if (!inRange) {
+    //   logger.warn(`Punch Out Denied: User ${req.user._id} is out of range.`);
+    //   return res.status(403).json({ 
+    //     success: false, 
+    //     message: "Punch-out failed. You are outside the office perimeter.." 
+    //   });
+    // }
 
     attendance.punchOut = {
       time: punchOutTime,
