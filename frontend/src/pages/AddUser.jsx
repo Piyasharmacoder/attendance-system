@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ArrowLeft, UserPlus, Info } from 'lucide-react';
 import { useCreateUserMutation, useGetManagersQuery } from "../api/apiSlice";
 
 export default function AddUser() {
@@ -49,18 +50,45 @@ export default function AddUser() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800">Add User</h1>
-            <p className="text-slate-500 mt-1">Create a new user account from admin panel.</p>
+<div className="group bg-white rounded-3xl p-8 border border-slate-100 shadow-xl hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-1">
+      <div className="flex items-center justify-between gap-6 flex-wrap">
+        
+        {/* Left Section: Icon & Text */}
+        <div className="flex items-start gap-4">
+          <div className="p-3 bg-emerald-50 rounded-2xl text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500 rotate-0 group-hover:rotate-12 shadow-inner">
+            <UserPlus size={28} />
           </div>
-          <Link to="/users" className="text-sm font-semibold text-emerald-700 hover:underline">
-            Back to Users
-          </Link>
+          
+          <div>
+            <h1 className="text-3xl font-extrabold text-slate-800 transition-colors duration-300 hover:text-emerald-600 cursor-default">
+              Add User
+            </h1>
+            
+            {/* Animated Underline Text */}
+            <div className="relative inline-block mt-1 group/text">
+              <p className="text-slate-500 transition-colors duration-300 group-hover/text:text-slate-800 flex items-center gap-2">
+                <Info size={14} className="text-emerald-500" />
+                Create a new user account from admin panel.
+              </p>
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 transition-all duration-500 group-hover/text:w-full"></span>
+            </div>
+          </div>
         </div>
-      </div>
 
+        {/* Right Section: Animated Button */}
+        <Link 
+          to="/users" 
+          className="relative overflow-hidden px-6 py-3 rounded-xl bg-green-900 text-white flex items-center gap-2 transition-all duration-300 hover:bg-emerald-600 hover:ring-4 hover:ring-emerald-100 group/btn"
+        >
+          {/* Moving background effect */}
+          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-emerald-400 to-teal-500 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-500"></span>
+          
+          <ArrowLeft size={18} className="relative z-10 transition-transform duration-300 group-hover/btn:-translate-x-1" />
+          <span className="relative z-10 font-bold">Back to Users</span>
+        </Link>
+        
+      </div>
+    </div>
       <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-5">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Field label="Name">

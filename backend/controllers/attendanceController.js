@@ -52,6 +52,15 @@ export const punchIn = async (req, res) => {
     // 🔥 Geofence check
     const inRange = isWithinRadius(parsedLat, parsedLng, OFFICE_LAT, OFFICE_LNG);
 
+    // --- location restriction ---
+    if (!inRange) {
+      logger.warn(`Punch In Denied: User ${req.user._id} is out of range.`);
+      return res.status(403).json({ 
+        success: false, 
+        message: "Punch-in failed. You are outside the office perimeter.." 
+      });
+    }
+
     const attendance = await Attendance.create({
       user: req.user._id,
       date: new Date(),
@@ -121,6 +130,15 @@ export const punchOut = async (req, res) => {
 
     // 📍 Geo check
     const inRange = isWithinRadius(parsedLat, parsedLng, OFFICE_LAT, OFFICE_LNG);
+
+    // --- location restriction ---
+    if (!inRange) {
+      logger.warn(`Punch Out Denied: User ${req.user._id} is out of range.`);
+      return res.status(403).json({ 
+        success: false, 
+        message: "Punch-out failed. You are outside the office perimeter.." 
+      });
+    }
 
     attendance.punchOut = {
       time: punchOutTime,

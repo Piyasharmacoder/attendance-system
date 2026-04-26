@@ -269,7 +269,7 @@ function StatCard({ title, value, color }) {
   );
 }
 
-function UsersTable({ users, getRoleBadge, getStatus, onView, onEdit, onToggleStatus, onDelete }) {
+function UsersTable({ users, getRoleBadge, getStatus, onView, onEdit }) {
   return (
     <div className="overflow-x-auto rounded-2xl border border-slate-100">
       <table className="min-w-[860px] w-full text-sm">

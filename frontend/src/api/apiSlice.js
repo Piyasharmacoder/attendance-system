@@ -61,7 +61,7 @@ export const apiSlice = createApi({
 
     createUser: builder.mutation({
   query: (payload) => ({
-    url: '/auth/users',   // ✅ FIXED
+    url: '/users', 
     method: 'POST',
     body: payload,
   }),
