@@ -113,8 +113,8 @@ export default function UserDetails() {
       <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">User Details</h1>
-            <p className="text-slate-500 mt-1">Profile and attendance history for selected user.</p>
+            <h1 className="text-2xl font-bold text-slate-800">Users Details</h1>
+            <p className="text-slate-500 mt-1">Profile and attendance history for selected user</p>
           </div>
           <Link to="/users" className="text-sm font-semibold text-emerald-700 hover:underline">
             Back to Users
