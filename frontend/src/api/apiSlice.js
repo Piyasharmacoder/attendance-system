@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseUrl: import.meta.env.VITE_API_URL || 'https://attendance-system-4ghz.onrender.com/api',
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.token;
     if (token) {
@@ -60,13 +60,13 @@ export const apiSlice = createApi({
     }),
 
     createUser: builder.mutation({
-      query: (payload) => ({
-        url: '/users',
-        method: 'POST',
-        body: payload,
-      }),
-      invalidatesTags: ['User'],
-    }),
+  query: (payload) => ({
+    url: '/auth/users',   // ✅ FIXED
+    method: 'POST',
+    body: payload,
+  }),
+  invalidatesTags: ['User'],
+}),
   }),
 });
 

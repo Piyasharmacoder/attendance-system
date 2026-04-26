@@ -6,7 +6,7 @@ import PreviewModal from "../components/reports/PreviewModal";
 import ReportsTable from "../components/reports/ReportsTable";
 import StatsCard from "../components/reports/StatsCard";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "https://attendance-system-4ghz.onrender.com/api";
 
 const initialFilterInputs = {
   startDateInput: "",
