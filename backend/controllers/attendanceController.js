@@ -1,12 +1,11 @@
-
 import Attendance from '../models/Attendance.js';
 import logger from '../utils/logger.js';
 import { isWithinRadius } from '../utils/geofence.js';
 import User from '../models/User.js';
 
 // Office location
-const OFFICE_LAT = 22.7616;
-const OFFICE_LNG = 75.9265;
+const OFFICE_LAT = 22.75833004248661;
+const OFFICE_LNG = 75.9301934127115;
 
 
 // global function to get today's date range
@@ -28,16 +27,6 @@ export const punchIn = async (req, res) => {
     const { lat, lng, selfie } = req.body;
     const parsedLat = Number(lat);
     const parsedLng = Number(lng);
-    
-// ✅ for DEBUG LOGS
-console.log("User Lat:", parsedLat);
-console.log("User Lng:", parsedLng);
-console.log("Office Lat:", OFFICE_LAT);
-console.log("Office Lng:", OFFICE_LNG);
-
-// ✅ DISTANCE CHECK (YAHAN LAGANA HAI)
-const distance = getDistance(parsedLat, parsedLng, OFFICE_LAT, OFFICE_LNG);
-console.log("Distance (meters):", distance);
     
     // ✅ VALIDATION 
     if (
@@ -62,15 +51,6 @@ console.log("Distance (meters):", distance);
 
     // 🔥 Geofence check
     const inRange = isWithinRadius(parsedLat, parsedLng, OFFICE_LAT, OFFICE_LNG);
-
-    // --- location restriction ---
-    // if (!inRange) {
-    //   logger.warn(`Punch In Denied: User ${req.user._id} is out of range.`);
-    //   return res.status(403).json({ 
-    //     success: false, 
-    //     message: "Punch-in failed. You are outside the office perimeter.." 
-    //   });
-    // }
 
     const attendance = await Attendance.create({
       user: req.user._id,
@@ -142,15 +122,6 @@ export const punchOut = async (req, res) => {
     // 📍 Geo check
     const inRange = isWithinRadius(parsedLat, parsedLng, OFFICE_LAT, OFFICE_LNG);
 
-    // --- location restriction ---
-    // if (!inRange) {
-    //   logger.warn(`Punch Out Denied: User ${req.user._id} is out of range.`);
-    //   return res.status(403).json({ 
-    //     success: false, 
-    //     message: "Punch-out failed. You are outside the office perimeter.." 
-    //   });
-    // }
-
     attendance.punchOut = {
       time: punchOutTime,
       location: { lat: parsedLat, lng: parsedLng },
@@ -210,4 +181,3 @@ export const getAttendanceRecords = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
