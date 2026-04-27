@@ -15,17 +15,23 @@ export default function Overtime() {
     startDate: "",
     endDate: "",
   });
+
   const [activeTab, setActiveTab] = useState("request");
   const queryFilters = useMemo(() => {
-    if (isReviewer && filters.status === "All") {
-      return { ...filters, status: "Pending" };
-    }
     return filters;
-  }, [filters, isReviewer]);
-  const { data, isLoading } = useGetOvertimeRequestsQuery(queryFilters);
-  const [requestOvertime, { isLoading: requesting }] = useRequestOvertimeMutation();
-  const [updateOvertimeStatus, { isLoading: updating }] = useUpdateOvertimeStatusMutation();
-  const [form, setForm] = useState({ date: "", requestedHours: "", reason: "" });
+  }, [filters]);
+
+  const { data, isLoading, refetch } =
+    useGetOvertimeRequestsQuery(queryFilters);
+  const [requestOvertime, { isLoading: requesting }] =
+    useRequestOvertimeMutation();
+  const [updateOvertimeStatus, { isLoading: updating }] =
+    useUpdateOvertimeStatusMutation();
+  const [form, setForm] = useState({
+    date: "",
+    requestedHours: "",
+    reason: "",
+  });
   const list = useMemo(() => data?.data || [], [data]);
 
   const stats = useMemo(() => {
@@ -36,7 +42,7 @@ export default function Overtime() {
         if (item.status === "Rejected") acc.rejected += 1;
         return acc;
       },
-      { pending: 0, approved: 0, rejected: 0 }
+      { pending: 0, approved: 0, rejected: 0 },
     );
   }, [list]);
 
@@ -67,6 +73,7 @@ export default function Overtime() {
   const updateStatus = async (id, status) => {
     try {
       await updateOvertimeStatus({ id, status }).unwrap();
+      refetch(); // for refreching the list after update
     } catch (error) {
       alert(error?.data?.message || "Failed to update overtime");
     }
@@ -90,7 +97,9 @@ export default function Overtime() {
         </div>
         <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
           <p className="text-sm text-emerald-700">Approved</p>
-          <p className="text-2xl font-bold text-emerald-800">{stats.approved}</p>
+          <p className="text-2xl font-bold text-emerald-800">
+            {stats.approved}
+          </p>
         </div>
         <div className="rounded-2xl border border-rose-100 bg-rose-50 p-4">
           <p className="text-sm text-rose-700">Rejected</p>
@@ -132,7 +141,9 @@ export default function Overtime() {
           onSubmit={submitRequest}
           className="rounded-3xl border border-slate-100 bg-white p-4 sm:p-6 shadow-sm space-y-4"
         >
-          <h2 className="text-lg font-semibold text-slate-800">Request Overtime</h2>
+          <h2 className="text-lg font-semibold text-slate-800">
+            Request Overtime
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <input
               type="date"
@@ -147,7 +158,9 @@ export default function Overtime() {
               min="1"
               placeholder="Requested hours"
               value={form.requestedHours}
-              onChange={(e) => setForm({ ...form, requestedHours: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, requestedHours: e.target.value })
+              }
               className="p-2.5 border border-slate-200 rounded-xl outline-none focus:border-emerald-500"
             />
             <input
@@ -172,7 +185,9 @@ export default function Overtime() {
         <div className="rounded-3xl border border-slate-100 bg-white p-4 sm:p-6 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
             <h2 className="text-lg font-semibold text-slate-800">
-              {isEmployee ? "My Overtime Requests" : "Pending Overtime Requests"}
+              {isEmployee
+                ? "My Overtime Requests"
+                : "Pending Overtime Requests"}
             </h2>
             {isReviewer && queryFilters.status === "Pending" && (
               <span className="inline-flex items-center rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 border border-amber-100">
@@ -184,7 +199,9 @@ export default function Overtime() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
             <select
               value={filters.status}
-              onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, status: e.target.value }))
+              }
               className="p-2.5 border border-slate-200 rounded-xl outline-none focus:border-emerald-500"
             >
               <option value="All">All Status</option>
@@ -195,20 +212,24 @@ export default function Overtime() {
             <input
               type="date"
               value={filters.startDate}
-              onChange={(e) => setFilters((prev) => ({ ...prev, startDate: e.target.value }))}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, startDate: e.target.value }))
+              }
               className="p-2.5 border border-slate-200 rounded-xl outline-none focus:border-emerald-500"
             />
             <input
               type="date"
               value={filters.endDate}
-              onChange={(e) => setFilters((prev) => ({ ...prev, endDate: e.target.value }))}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, endDate: e.target.value }))
+              }
               className="p-2.5 border border-slate-200 rounded-xl outline-none focus:border-emerald-500"
             />
             <button
               type="button"
               onClick={() =>
                 setFilters({
-                  status: isReviewer ? "Pending" : "All",
+                  status: "All",
                   startDate: "",
                   endDate: "",
                 })
@@ -220,7 +241,9 @@ export default function Overtime() {
           </div>
 
           {isLoading ? (
-            <p className="text-slate-500 text-sm">Loading overtime requests...</p>
+            <p className="text-slate-500 text-sm">
+              Loading overtime requests...
+            </p>
           ) : (
             <div className="space-y-3">
               {list.length === 0 && (
@@ -244,14 +267,16 @@ export default function Overtime() {
                       <p className="text-xs text-slate-500">
                         Reviewed By:{" "}
                         {item.approvedBy?.name ||
-                          (item.status === "Pending" ? "Pending Review" : "N/A")}
+                          (item.status === "Pending"
+                            ? "Pending Review"
+                            : "N/A")}
                       </p>
                     </div>
 
                     <div className="flex flex-col gap-2 md:items-end">
                       <span
                         className={`inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${statusBadgeClass(
-                          item.status
+                          item.status,
                         )}`}
                       >
                         {item.status}

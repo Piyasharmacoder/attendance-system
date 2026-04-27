@@ -72,22 +72,50 @@ export default function Users() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800">User Management Console</h1>
-            <p className="text-slate-500 mt-1">
-              Monitor users, roles, and access distribution in one place.
-            </p>
-          </div>
-          <button
-            onClick={() => navigate("/users/add")}
-            className="px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition"
-          >
-            Add User
-          </button>
-        </div>
-      </div>
+<div className="relative bg-white/70 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300">
+
+  {/* Gradient Glow Effect */}
+  <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-emerald-500/10 via-transparent to-blue-500/10 pointer-events-none"></div>
+
+  <div className="relative flex items-center justify-between gap-4 flex-wrap">
+    
+    {/* Left Content */}
+    <div>
+      <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
+        <span className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+          User Management Console
+        </span>
+      </h1>
+
+      <p className="text-slate-500 mt-2 text-sm sm:text-base max-w-md leading-relaxed">
+        Monitor users, roles, and access distribution in one place with a clean and powerful dashboard.
+      </p>
+    </div>
+
+    {/* Button */}
+    <button
+      onClick={() => navigate("/users/add")}
+      className="group relative px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2"
+    >
+      {/* Icon */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5 group-hover:rotate-90 transition-transform duration-300"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+      </svg>
+
+      Add User
+
+      {/* Shine Effect */}
+      <span className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition"></span>
+    </button>
+
+  </div>
+</div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Total Users" value={stats.total} color="from-slate-700 to-slate-900" />
