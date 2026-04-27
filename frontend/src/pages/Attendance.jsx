@@ -6,6 +6,14 @@ import {
   usePunchOutMutation,
 } from "../api/attendanceApi";
 
+import {
+  Calendar,
+  Shield,
+  Clock,
+  ArrowRightCircle,
+  ArrowLeftCircle
+} from "lucide-react";
+
 const getCurrentLocation = () =>
   new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -313,47 +321,98 @@ export default function Attendance() {
         </div>
       </div>
 
-      <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-        <h2 className="font-bold text-slate-800 mb-4">Recent Records</h2>
-        {recordsLoading ? (
-          <div className="space-y-3">
-            {[1, 2, 3, 4].map((item) => (
-              <div key={item} className="border border-slate-100 rounded-xl p-3 animate-pulse">
-                <div className="h-3 bg-slate-100 rounded w-1/4 mb-2" />
-                <div className="h-3 bg-slate-100 rounded w-1/5 mb-2" />
-                <div className="h-3 bg-slate-100 rounded w-1/6" />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {myRecords.slice(0, 5).length === 0 ? (
-              <div className="text-center py-8 rounded-2xl border border-dashed border-slate-200 bg-slate-50/60">
-                <p className="text-slate-600 font-medium">No attendance records yet.</p>
-              </div>
-            ) : (
-              myRecords.slice(0, 5).map((item) => (
-                <div
-                  key={item._id}
-                  className="border border-slate-100 rounded-xl p-4 text-sm bg-gradient-to-r from-white to-slate-50/60"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className="font-semibold text-slate-700">{formatDate(item.date)}</p>
-                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full border bg-emerald-100 text-emerald-700 border-emerald-200">
-                      {item.status || "Incomplete"}
-                    </span>
-                  </div>
-                  <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2 text-slate-600">
-                    <p>In: {formatTime(item?.punchIn?.time)}</p>
-                    <p>Out: {formatTime(item?.punchOut?.time)}</p>
-                    <p>Hours: {item.workingHours ?? 0}h</p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        )}
+<div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-md overflow-hidden">
+
+  {/* 🔥 Glow */}
+  <div className="absolute -top-8 -right-8 w-32 h-32 bg-emerald-200 opacity-30 blur-3xl rounded-full"></div>
+  <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-sky-200 opacity-30 blur-3xl rounded-full"></div>
+
+  {/* HEADER */}
+  <div className="relative flex items-center justify-between mb-5 flex-wrap gap-3">
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow">
+        <Calendar size={18} />
       </div>
+      <div>
+        <h2 className="font-bold text-slate-800 text-lg">Recent Records</h2>
+        <p className="text-xs text-slate-500">Your latest attendance activity</p>
+      </div>
+    </div>
+  </div>
+
+  {/* CONTENT */}
+  {recordsLoading ? (
+    <div className="space-y-3">
+      {[1, 2, 3, 4].map((item) => (
+        <div
+          key={item}
+          className="rounded-2xl p-4 bg-white/60 border border-slate-100 animate-pulse"
+        >
+          <div className="h-3 bg-slate-200 rounded w-1/3 mb-2" />
+          <div className="h-3 bg-slate-200 rounded w-1/4 mb-2" />
+          <div className="h-3 bg-slate-200 rounded w-1/5" />
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div className="space-y-3">
+
+      {myRecords.slice(0, 5).length === 0 ? (
+        <div className="text-center py-10 rounded-2xl border border-dashed border-slate-200 bg-slate-50/60">
+          <p className="text-slate-600 font-medium">
+            No attendance records yet.
+          </p>
+        </div>
+      ) : (
+        myRecords.slice(0, 5).map((item) => (
+          <div
+            key={item._id}
+            className="group rounded-2xl p-4 bg-white/70 border border-slate-200 hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+          >
+
+            {/* TOP */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+
+              {/* DATE */}
+              <div className="flex items-center gap-2">
+                <Calendar size={16} className="text-slate-400" />
+                <p className="font-semibold text-slate-700">
+                  {formatDate(item.date)}
+                </p>
+              </div>
+
+              {/* STATUS */}
+              <span className="text-xs font-semibold px-3 py-1 rounded-full border bg-emerald-100 text-emerald-700 border-emerald-200 flex items-center gap-1">
+                <Shield size={12} />
+                {item.status || "Incomplete"}
+              </span>
+            </div>
+
+            {/* DETAILS */}
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3 text-slate-600 text-sm">
+
+              <div className="flex items-center gap-2">
+                <ArrowRightCircle size={16} className="text-emerald-500" />
+                <span>In: {formatTime(item?.punchIn?.time)}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <ArrowLeftCircle size={16} className="text-rose-500" />
+                <span>Out: {formatTime(item?.punchOut?.time)}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Clock size={16} className="text-blue-500" />
+                <span>Hours: {item.workingHours ?? 0}h</span>
+              </div>
+
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  )}
+</div>
     </div>
   );
 }

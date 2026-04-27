@@ -5,6 +5,12 @@ import {
   useUpdateOvertimeStatusMutation,
 } from "../api/overtimeApi";
 import { useSelector } from "react-redux";
+import {
+  Clock,
+  User,
+  Calendar,
+  Shield
+} from "lucide-react";
 
 export default function Overtime() {
   const { userInfo } = useSelector((state) => state.auth);
@@ -182,132 +188,174 @@ export default function Overtime() {
       )}
 
       {(!isEmployee || activeTab === "myRequests") && (
-        <div className="rounded-3xl border border-slate-100 bg-white p-4 sm:p-6 shadow-sm">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
-            <h2 className="text-lg font-semibold text-slate-800">
-              {isEmployee
-                ? "My Overtime Requests"
-                : "Pending Overtime Requests"}
-            </h2>
-            {isReviewer && queryFilters.status === "Pending" && (
-              <span className="inline-flex items-center rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 border border-amber-100">
-                Default: Pending only
-              </span>
-            )}
-          </div>
+  <div className="relative rounded-3xl border border-slate-200 bg-white/80 backdrop-blur-xl p-5 sm:p-7 shadow-md overflow-hidden">
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-            <select
-              value={filters.status}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, status: e.target.value }))
-              }
-              className="p-2.5 border border-slate-200 rounded-xl outline-none focus:border-emerald-500"
-            >
-              <option value="All">All Status</option>
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
-            </select>
-            <input
-              type="date"
-              value={filters.startDate}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, startDate: e.target.value }))
-              }
-              className="p-2.5 border border-slate-200 rounded-xl outline-none focus:border-emerald-500"
-            />
-            <input
-              type="date"
-              value={filters.endDate}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, endDate: e.target.value }))
-              }
-              className="p-2.5 border border-slate-200 rounded-xl outline-none focus:border-emerald-500"
-            />
-            <button
-              type="button"
-              onClick={() =>
-                setFilters({
-                  status: "All",
-                  startDate: "",
-                  endDate: "",
-                })
-              }
-              className="p-2.5 border border-slate-200 rounded-xl font-medium hover:bg-slate-50"
-            >
-              Reset Filters
-            </button>
-          </div>
+    {/* 🔥 Glow */}
+    <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-200 opacity-30 blur-3xl rounded-full"></div>
+    <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-sky-200 opacity-30 blur-3xl rounded-full"></div>
 
-          {isLoading ? (
-            <p className="text-slate-500 text-sm">
-              Loading overtime requests...
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {list.length === 0 && (
-                <div className="rounded-2xl border border-dashed border-slate-200 p-6 text-center text-slate-500 text-sm">
-                  No overtime requests found.
-                </div>
-              )}
-              {list.map((item) => (
-                <div
-                  key={item._id}
-                  className="rounded-2xl border border-slate-100 p-4 hover:shadow-sm transition"
-                >
-                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
-                    <div className="space-y-1 text-sm text-slate-700">
-                      <p className="font-semibold text-slate-900">
-                        {item.user?.name || "N/A"}
-                      </p>
-                      <p>Date: {new Date(item.date).toLocaleDateString()}</p>
-                      <p>Requested Hours: {item.requestedHours}</p>
-                      <p>Reason: {item.reason}</p>
-                      <p className="text-xs text-slate-500">
-                        Reviewed By:{" "}
-                        {item.approvedBy?.name ||
-                          (item.status === "Pending"
-                            ? "Pending Review"
-                            : "N/A")}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col gap-2 md:items-end">
-                      <span
-                        className={`inline-flex w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${statusBadgeClass(
-                          item.status,
-                        )}`}
-                      >
-                        {item.status}
-                      </span>
-
-                      {isReviewer && item.status === "Pending" && (
-                        <div className="flex flex-wrap gap-2">
-                          <button
-                            disabled={updating}
-                            onClick={() => updateStatus(item._id, "Approved")}
-                            className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-sm disabled:opacity-60"
-                          >
-                            Approve
-                          </button>
-                          <button
-                            disabled={updating}
-                            onClick={() => updateStatus(item._id, "Rejected")}
-                            className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm disabled:opacity-60"
-                          >
-                            Reject
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+    {/* HEADER */}
+    <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 flex items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow">
+          <Clock size={18} />
         </div>
+        <div>
+          <h2 className="text-lg font-bold text-slate-800">
+            {isEmployee ? "My Overtime Requests" : "Overtime Requests"}
+          </h2>
+          <p className="text-xs text-slate-500">Track and manage overtime workflow</p>
+        </div>
+      </div>
+
+      {isReviewer && queryFilters.status === "Pending" && (
+        <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 border border-amber-100">
+          ⚡ Pending Only
+        </span>
       )}
+    </div>
+
+    {/* FILTERS */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+
+      <select
+        value={filters.status}
+        onChange={(e) =>
+          setFilters((prev) => ({ ...prev, status: e.target.value }))
+        }
+        className="p-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-emerald-400 outline-none"
+      >
+        <option value="All">All Status</option>
+        <option value="Pending">Pending</option>
+        <option value="Approved">Approved</option>
+        <option value="Rejected">Rejected</option>
+      </select>
+
+      <input
+        type="date"
+        value={filters.startDate}
+        onChange={(e) =>
+          setFilters((prev) => ({ ...prev, startDate: e.target.value }))
+        }
+        className="p-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-emerald-400 outline-none"
+      />
+
+      <input
+        type="date"
+        value={filters.endDate}
+        onChange={(e) =>
+          setFilters((prev) => ({ ...prev, endDate: e.target.value }))
+        }
+        className="p-3 rounded-xl border border-slate-200 bg-white/70 focus:ring-2 focus:ring-emerald-400 outline-none"
+      />
+
+      <button
+        type="button"
+        onClick={() =>
+          setFilters({
+            status: "All",
+            startDate: "",
+            endDate: "",
+          })
+        }
+        className="p-3 rounded-xl border border-slate-200 font-medium hover:bg-slate-50 transition"
+      >
+        Reset
+      </button>
+    </div>
+
+    {/* CONTENT */}
+    {isLoading ? (
+      <div className="space-y-3">
+        {[1,2,3].map(i => (
+          <div key={i} className="h-16 rounded-xl bg-slate-100 animate-pulse"></div>
+        ))}
+      </div>
+    ) : (
+      <div className="space-y-3">
+
+        {list.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-slate-500 text-sm">
+            No overtime requests found.
+          </div>
+        )}
+
+        {list.map((item) => (
+          <div
+            key={item._id}
+            className="group rounded-2xl border border-slate-200 bg-white/70 p-4 hover:shadow-md hover:-translate-y-1 transition-all duration-300"
+          >
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+              {/* LEFT INFO */}
+              <div className="space-y-1 text-sm text-slate-700">
+
+                <p className="font-semibold text-slate-900 flex items-center gap-2">
+                  <User size={14} />
+                  {item.user?.name || "N/A"}
+                </p>
+
+                <p className="flex items-center gap-2">
+                  <Calendar size={14} />
+                  {new Date(item.date).toLocaleDateString()}
+                </p>
+
+                <p className="flex items-center gap-2">
+                  <Clock size={14} />
+                  {item.requestedHours} hrs
+                </p>
+
+                <p className="text-slate-500">
+                  {item.reason}
+                </p>
+
+                <p className="text-xs text-slate-400">
+                  Reviewed By: {item.approvedBy?.name || "Pending"}
+                </p>
+
+              </div>
+
+              {/* RIGHT SIDE */}
+              <div className="flex flex-col gap-2 md:items-end">
+
+                <span
+                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${statusBadgeClass(item.status)}`}
+                >
+                  <Shield size={12} />
+                  {item.status}
+                </span>
+
+                {isReviewer && item.status === "Pending" && (
+                  <div className="flex gap-2">
+
+                    <button
+                      disabled={updating}
+                      onClick={() => updateStatus(item._id, "Approved")}
+                      className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-sm hover:scale-105 transition disabled:opacity-60"
+                    >
+                      Approve
+                    </button>
+
+                    <button
+                      disabled={updating}
+                      onClick={() => updateStatus(item._id, "Rejected")}
+                      className="px-3 py-1.5 rounded-lg bg-red-500 text-white text-sm hover:scale-105 transition disabled:opacity-60"
+                    >
+                      Reject
+                    </button>
+
+                  </div>
+                )}
+
+              </div>
+
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
     </div>
   );
 }
